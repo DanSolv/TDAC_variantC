@@ -404,7 +404,7 @@ class ddda_dataset:
         deduped_inds = self.dedup_read_inds(locus=locus, read_ids=read_ids, threshold_factor=threshold_factor)
         return np.array(self.read_ids[locus])[deduped_inds]
 
-    def dedup_read_inds(self, locus, read_ids: Iterable[str], threshold_factor=0.01) -> np.ndarray[int]:
+    def dedup_read_inds(self, locus, read_ids: Iterable[str], threshold_factor=0.01, **kwargs) -> np.ndarray[int]:
         # For each read ID, get its index in the full read ID list
         locus_ids = self.read_ids[locus]
         locus_id_dict = dict(zip(locus_ids, np.arange(len(locus_ids))))
@@ -419,9 +419,11 @@ class ddda_dataset:
         self.threshold = threshold
         logging.info(f"Threshold for calling duplicate reads: {threshold}")
 
-        return dedup_read_inds(self.edit_dict[locus], read_inds, threshold)
+        return dedup_read_inds(self.edit_dict[locus], read_inds, threshold, **kwargs)
 
-    def dedup_all(self, threshold_factor: float = 0.01):
+    def dedup_all(self, threshold_factor: float = 0.01, **kwargs):
         self.deduped_inds = {}
         for locus, read_ids in self.read_ids.items():
-            self.deduped_inds[locus] = self.dedup_read_inds(locus=locus, read_ids=read_ids, threshold_factor=threshold_factor)
+            self.deduped_inds[locus] = self.dedup_read_inds(
+                locus=locus, read_ids=read_ids, threshold_factor=threshold_factor, **kwargs
+            )
